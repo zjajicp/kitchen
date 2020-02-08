@@ -4,14 +4,17 @@ import styled from 'styled-components';
 import {Button, Checkbox, Input, Icon} from "antd";
 
 const StyledHeaderContainer = styled(Box)`
-  padding: 16px;
+  padding: ${props => props.theme.space[2]}px;
   text-align: center;
   border-bottom: 1px solid #000;
+  h1 {
+  margin: 0;
+  }
 `;
 
 const Header = ({ children, ...props }) => (
     <StyledHeaderContainer {...props}>
-        <h2>{children}</h2>
+        <h1>{children}</h1>
     </StyledHeaderContainer>
 );
 
@@ -31,6 +34,7 @@ const List = ({title, children, ...props}) => (
             <Text fontSize={2} fontWeight="bold">Item Name</Text>
             <Text fontSize={2} fontWeight="bold">Qty</Text>
         </Flex>
+        {children}
     </StyledListContainer>
 );
 
@@ -62,7 +66,7 @@ const InteractiveItemsList = ({items = [], title, onSelect, onConfirm, confirmTe
                 <Text fontSize={1} width={1/4}>{item.qty}</Text>
             </Flex>
         ))}
-        <Button type="block" onClick={onConfirm}>{confirmText}</Button>
+        <Button block type="primary" onClick={onConfirm}>{confirmText}</Button>
     </List>
 );
 
@@ -101,13 +105,17 @@ const KitchenManager = ({name, onChange, formData = {}, ...props}) => (
             <Flex  alignItems="center" flexDirection="row">
                 <Text width={1/4}>Quantity:</Text>
                 <Flex alignItems="center" width="200px">
-                    <QtyButton type="primary"><Icon type="minus" /></QtyButton>
-                    <QtyInput type="number" value={formData.qty} onChange={evt => {
+                    <QtyButton onChange={() => {
                         onChange({
-                            qty: evt.target.value
+                            qty: (formData.qty || 0) - 1
                         })
-                    }} />
-                    <QtyButton type="primary"><Icon type="plus" /></QtyButton>
+                    }} type="primary"><Icon type="minus" /></QtyButton>
+                    <QtyInput type="number" value={formData.qty} />
+                    <QtyButton onChange={() => {
+                        onChange({
+                            qty: (formData.qty || 0) + 1
+                        })
+                    }} type="primary"><Icon type="plus" /></QtyButton>
                 </Flex>
             </Flex>
         </Box>
@@ -160,8 +168,11 @@ const KitchenMode = ({
                         confirmText={interactiveListConfirmText}
                         items={interactiveItems}
                         title={interactiveListTitle}
-                        width={1/3}/>
-                    <ItemsList items={items} title={listTitle} width={1/3} />
+                        width={0.45}/>
+                    <ItemsList
+                        items={items}
+                        title={listTitle}
+                        width={0.45} />
                 </Flex>
                 <KitchenManager onChange={onFormChange} formData={formData} name={manageText} mb={4} />
                 <ModeSwitcher onChangeMode={onChangeMode} buttonText={changeModeText}  />
