@@ -8,9 +8,11 @@
     "@testing-library/user-event": "^7.1.2",
     "antd": "^3.26.8",
     "eslint": "^6.8.0",
+    "ramda": "^0.27.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-scripts": "3.3.1",
+    "react-statex": "zjajicp/react-statex#master",
     "rebass": "^4.0.7",
     "styled-components": "^5.0.1"
   },
