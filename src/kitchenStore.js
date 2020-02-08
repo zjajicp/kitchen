@@ -1,11 +1,11 @@
 import {MODE} from "./constants";
-import {differenceWith, whereEq, reject, find, pipe, path} from 'ramda';
-import {getForm} from "./selectors";
+import {differenceWith, whereEq, reject} from 'ramda';
+import {getForm, getItemQty, hasSufficientInventory} from "./selectors";
 
 const DEFAULT_STATE = {
     mode: MODE.CHEF,
     requests: [],
-    inventory: [],
+    inventoryItems: [],
     form: {
         [MODE.CHEF]: {
             itemName: '',
@@ -15,23 +15,23 @@ const DEFAULT_STATE = {
             itemName: '',
             qty: 0
         }
-    }
+    },
+    toFulfilItems: {},
+    toClearItems: {}
 };
 
 
-const updateRequests = (change, kitchen) => {
-    const {requests} = kitchen;
-    const form = getForm({kitchen});
+const updateItems = (change, form, items) => {
     const name = form.itemName;
 
     if (change.qty == null || !form.itemName) {
-        return requests;
+        return items;
     }
 
+    const existing = item => item.name === form.itemName && !item.fulfilled;
+
     if (change.qty === 0) {
-        return reject(whereEq({
-            name: form.itemName
-        }))(requests)
+        return reject(existing)(items)
     }
 
     const updateFragment = {
@@ -40,47 +40,103 @@ const updateRequests = (change, kitchen) => {
     };
 
 
-    return requests.find(whereEq({
-        name
-    })) ? requests.map(item => item.name === name ? ({
+    return items.find(existing) ? items.map(item => existing(item) ? ({
         ...item,
         ...updateFragment
-    }) : item) : requests.concat(updateFragment);
+    }) : item) : items.concat(updateFragment);
 };
 
-const requestByName = name => find(whereEq({
-    name
-}));
 
-const requestQty = (name) => pipe(
-    requestByName(name),
-    path(['qty'])
-);
+const updateRequests = (change, kitchen) => {
+    const {requests} = kitchen;
+    const form = getForm({kitchen});
+    return updateItems(change, form, requests);
+};
+
+const updateInventory = (change, kitchen) => {
+    const {inventoryItems} = kitchen;
+    const form = getForm({ kitchen});
+    return updateItems(change, form, inventoryItems)
+};
+
+
+const updateForm = ({ change, form, mode, items }) => {
+    return {
+        ...form,
+        [mode]: {
+            ...form[mode],
+            ...change,
+            qty: change.itemName != null  ? getItemQty(change.itemName)(items) : change.qty
+        }
+    };
+};
+
+const isFulfilled = (request, state) => {
+    return state.toFulfilItems[request.name] && hasSufficientInventory(request, state);
+};
+
+const updateInventoryQty = (inventoryItems, diffItems, type) => {
+    return inventoryItems
+        .map(item => diffItems[item.name] ?  ({
+            ...item,
+            qty: type === 'increase' ? item.qty + diffItems[item.name].qty : item.qty - diffItems[item.name].qty
+        }) : item);
+};
 
 const actions = {
     submitChefRequestChange: (change) => ({setState, getState}) => {
         setState(currentState => ({
             requests: updateRequests(change, currentState),
-            form: {
-                ...currentState.form,
-                [MODE.CHEF]: {
-                    ...currentState.form[MODE.CHEF],
-                    ...change,
-                    qty: change.itemName != null  ? requestQty(change.itemName)(currentState.requests) :  change.qty
-                }
-            }
+            form: updateForm({
+                change,
+                form:currentState.form,
+                items:currentState.requests,
+                mode: currentState.mode
+            })
         }));
     },
     submitStorekeeperInventoryChange: (change) => ({setState, getState}) => {
-
-    },
-    clearSatisfiedRequests: (requestsToRemove) => ({setState}) => {
         setState(currentState => ({
-            requests: differenceWith((item1, item2) => item1.name === item2.name, currentState.requests, requestsToRemove)
+            inventoryItems: updateInventory(change, currentState),
+            form: updateForm({
+                change,
+                form:currentState.form,
+                items:currentState.inventoryItems,
+                mode: currentState.mode
+            })
+        }))
+    },
+    clearSatisfiedRequests: () => ({setState}) => {
+        setState(currentState => ({
+            requests: differenceWith(
+                (request, name) => request.name === name,
+                currentState.requests,
+                Object.keys(currentState.toClearItems).filter(name => !!currentState.toClearItems[name])
+            ),
+            inventoryItems: updateInventoryQty(currentState.inventoryItems, currentState.toClearItems, 'increase'),
+            toClearItems: {}
         }));
     },
-    fulfillRequests: (requests) => ({setState}) => {
+    fulfillRequests: () => ({setState}) => {
+        setState(currentState => {
+            const requests = currentState.requests.map(request => ({
+                ...request,
+                fulfilled: request.fulfilled || isFulfilled(request, currentState),
+            }));
+            const currentlyFulfilledRequests = Object
+                .values(currentState.toFulfilItems)
+                .filter(item => item && isFulfilled(item, currentState))
+                .reduce((acc, item) => ({
+                    ...acc,
+                    [item.name]: item
+                }), {});
 
+            return {
+                requests,
+                inventoryItems: updateInventoryQty(currentState.inventoryItems, currentlyFulfilledRequests, 'decrease'),
+                toFulfilItems: {}
+            };
+        })
     },
     switchMode: (mode) => ({setState}) => {
         setState({
@@ -92,6 +148,22 @@ const actions = {
         const {submitChefRequestChange, submitStorekeeperInventoryChange} = actions.kitchen;
         const handler = kitchen.mode === MODE.CHEF ? submitChefRequestChange : submitStorekeeperInventoryChange;
         handler(change);
+    },
+    toggleToFulfil: (request) => ({setState}) => {
+        setState(currentState => ({
+            toFulfilItems: {
+                ...currentState.toFulfilItems,
+                [request.name]: currentState.toFulfilItems[request.name] ? undefined : request
+            }
+        }))
+    },
+    toggleToClear: (request) => ({setState}) => {
+        setState(currentState => ({
+            toClearItems: {
+                ...currentState.toClearItems,
+                [request.name]: currentState.toClearItems[request.name] ? undefined : request
+            }
+        }));
     }
 };
 
