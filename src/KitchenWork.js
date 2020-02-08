@@ -1,16 +1,23 @@
 import React from 'react';
 import KitchenMode from "./KitchenMode";
 import {Flex} from 'rebass';
-import {connect} from "react-statex";
+import {connect} from "./react-statex";
 import {MODE} from "./constants";
+import {getForm} from "./selectors";
 
-const KitchenWork = ({pantryRequests, fulfilledRequests, chefForm, manageFormChange, switchMode, mode, ...props}) => {
+const KitchenWork = ({pantryRequests, fulfilledRequests, chefForm, actions, mode, disableQtyChange, ...props}) => {
+    console.log('PANTRY_REQUESTS', pantryRequests);
+    const handleFormChange = (change) => {
+        console.log(change);
+        actions.manageFormChange(change);
+    };
     return (
         <Flex width={1} {...props} justifyContent="center">
             {mode === MODE.CHEF ?  (
                 <KitchenMode
-                    onChangeMode={switchMode}
-                    onFormChange={manageFormChange}
+                    disableQtyChange={disableQtyChange}
+                    onChangeMode={actions.switchMode}
+                    onFormChange={handleFormChange}
                     formData={chefForm}
                     interactiveItems={fulfilledRequests}
                     items={pantryRequests}
@@ -26,8 +33,9 @@ const KitchenWork = ({pantryRequests, fulfilledRequests, chefForm, manageFormCha
                     listTitle="Pantry Requests"/>
                 ) : (
                     <KitchenMode
-                        onChangeMode={switchMode}
-                        onFormChange={manageFormChange}
+                        disableQtyChange={disableQtyChange}
+                        onChangeMode={actions.switchMode}
+                        onFormChange={actions.manageFormChange}
                         formData={chefForm}
                         interactiveItems={fulfilledRequests}
                         items={pantryRequests}
@@ -47,17 +55,23 @@ const KitchenWork = ({pantryRequests, fulfilledRequests, chefForm, manageFormCha
 };
 
 export default connect({
-    stateToProps: ({kitchen}) => ({
-        pantryRequests: kitchen.requests.filter(item => !item.fulfilled),
-        fulfilledRequests: kitchen.requests.filter(item => item.fullfilled),
-        receivedPantryRequests: kitchen.requests,
-        inventoryItems: kitchen.inventoryItems,
-        chefForm: kitchen.form[MODE.CHEF],
-        storeKeeperForm: kitchen.form[MODE.STORE_KEEPER],
-        mode: kitchen.mode
-    }),
-    actionsToProps: ({kitchen}) => ({
-        manageFormChange: kitchen.manageFormChange,
-        switchMode: kitchen.switchMode
-    })
+    stateToProps: (state) => {
+        const {kitchen} = state;
+        return {
+            pantryRequests: kitchen.requests.filter(item => !item.fulfilled),
+            fulfilledRequests: kitchen.requests.filter(item => item.fullfilled),
+            receivedPantryRequests: kitchen.requests,
+            inventoryItems: kitchen.inventoryItems,
+            chefForm: kitchen.form[MODE.CHEF],
+            storeKeeperForm: kitchen.form[MODE.STORE_KEEPER],
+            mode: kitchen.mode,
+            disableQtyChange: !getForm(state).itemName
+        };
+    },
+    actionsToProps: ({kitchen}) => {
+        return {
+            manageFormChange: kitchen.manageFormChange,
+            switchMode: kitchen.switchMode
+        };
+    }
 })(KitchenWork);

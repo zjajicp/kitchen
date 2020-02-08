@@ -5,7 +5,7 @@ import { theme } from './theme';
 import {ThemeProvider} from "styled-components";
 import KitchenWork from "./KitchenWork";
 import kitchenStore from './kitchenStore';
-import {StoreProvider} from "react-statex";
+import {StoreProvider} from "./react-statex";
 
 const store = {
     kitchen: kitchenStore

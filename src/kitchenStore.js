@@ -1,5 +1,6 @@
 import {MODE} from "./constants";
-import {differenceWith, eqBy, whereEq} from 'ramda';
+import {differenceWith, whereEq, reject, find, pipe, path} from 'ramda';
+import {getForm} from "./selectors";
 
 const DEFAULT_STATE = {
     mode: MODE.CHEF,
@@ -17,18 +18,44 @@ const DEFAULT_STATE = {
     }
 };
 
-const updateRequests = (change, {requests}) => {
-    if (change.itemName) {
+
+const updateRequests = (change, kitchen) => {
+    const {requests} = kitchen;
+    const form = getForm({kitchen});
+    const name = form.itemName;
+
+    if (change.qty == null || !form.itemName) {
         return requests;
     }
 
+    if (change.qty === 0) {
+        return reject(whereEq({
+            name: form.itemName
+        }))(requests)
+    }
+
+    const updateFragment = {
+        qty: change.qty,
+        name: change.itemName == null ? form.itemName : change.itemName
+    };
+
+
     return requests.find(whereEq({
-        name: change.itemName
-    })) ? requests.map(item => item.name === change.itemName ? ({
+        name
+    })) ? requests.map(item => item.name === name ? ({
         ...item,
-        ...change
-    }) : item) : requests.concat(change);
+        ...updateFragment
+    }) : item) : requests.concat(updateFragment);
 };
+
+const requestByName = name => find(whereEq({
+    name
+}));
+
+const requestQty = (name) => pipe(
+    requestByName(name),
+    path(['qty'])
+);
 
 const actions = {
     submitChefRequestChange: (change) => ({setState, getState}) => {
@@ -38,7 +65,8 @@ const actions = {
                 ...currentState.form,
                 [MODE.CHEF]: {
                     ...currentState.form[MODE.CHEF],
-                    ...change
+                    ...change,
+                    qty: change.itemName != null  ? requestQty(change.itemName)(currentState.requests) :  change.qty
                 }
             }
         }));

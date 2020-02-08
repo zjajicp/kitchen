@@ -1,0 +1,1 @@
+export const getForm = ({kitchen}) => kitchen.form[kitchen.mode];

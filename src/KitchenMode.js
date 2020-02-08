@@ -87,40 +87,49 @@ const QtyInput = styled(Input)`
   border-left: 0;
 `;
 
-const KitchenManager = ({name, onChange, formData = {}, ...props}) => (
-    <KitchenManagerContainer p={3} {...props}>
-        <Text textAlign="center" fontSize={3} fontWeight="bold" mb={3}>Add/Remove/Modify {name}</Text>
-        <Box px={5}>
-            <Flex alignItems="center" mb={3}>
-                <Text width={1/4}>Item name:</Text>
-                <Box width={0.5}>
-                    <Input value={formData.itemName} onChange={evt => {
-                        onChange({
-                            itemName: evt.target.value
-                        })
-                    }} />
-                </Box>
-            </Flex>
-
-            <Flex  alignItems="center" flexDirection="row">
-                <Text width={1/4}>Quantity:</Text>
-                <Flex alignItems="center" width="200px">
-                    <QtyButton onChange={() => {
-                        onChange({
-                            qty: (formData.qty || 0) - 1
-                        })
-                    }} type="primary"><Icon type="minus" /></QtyButton>
-                    <QtyInput type="number" value={formData.qty} />
-                    <QtyButton onChange={() => {
-                        onChange({
-                            qty: (formData.qty || 0) + 1
-                        })
-                    }} type="primary"><Icon type="plus" /></QtyButton>
+const KitchenManager = ({name, onChange, formData = {}, disableQtyChange, ...props}) => {
+    const changeQtyHandler = (step) => () => {
+        onChange({
+            qty: (formData.qty || 0) + step
+        });
+    }
+    return (
+        <KitchenManagerContainer p={3} {...props}>
+            <Text textAlign="center" fontSize={3} fontWeight="bold" mb={3}>Add/Remove/Modify {name}</Text>
+            <Box px={5}>
+                <Flex alignItems="center" mb={3}>
+                    <Text width={1/4}>Item name:</Text>
+                    <Box width={0.5}>
+                        <Input value={formData.itemName} onChange={evt => {
+                            onChange({
+                                itemName: evt.target.value
+                            })
+                        }} />
+                    </Box>
                 </Flex>
-            </Flex>
-        </Box>
-    </KitchenManagerContainer>
-);
+
+                <Flex  alignItems="center" flexDirection="row">
+                    <Text width={1/4}>Quantity:</Text>
+                    <Flex alignItems="center" width="200px">
+                        <QtyButton
+                            disabled={disableQtyChange || !formData.qty}
+                            onClick={changeQtyHandler(-1)}
+                            type="primary">
+                            <Icon type="minus" />
+                        </QtyButton>
+                        <QtyInput type="number" value={formData.qty} />
+                        <QtyButton
+                            disabled={disableQtyChange}
+                            onClick={changeQtyHandler(+1)}
+                            type="primary">
+                            <Icon type="plus" />
+                        </QtyButton>
+                    </Flex>
+                </Flex>
+            </Box>
+        </KitchenManagerContainer>);
+};
+
 
 const ModeSwitcherContainer = styled(Flex)`
   padding: 8px;
@@ -154,6 +163,7 @@ const KitchenMode = ({
                          formData,
                          onInteractiveListConfirm,
                          interactiveListConfirmText,
+    disableQtyChange,
                          ...props
 }) => {
     return (
@@ -174,7 +184,7 @@ const KitchenMode = ({
                         title={listTitle}
                         width={0.45} />
                 </Flex>
-                <KitchenManager onChange={onFormChange} formData={formData} name={manageText} mb={4} />
+                <KitchenManager disableQtyChange={disableQtyChange} onChange={onFormChange} formData={formData} name={manageText} mb={4} />
                 <ModeSwitcher onChangeMode={onChangeMode} buttonText={changeModeText}  />
             </Box>
         </Box>

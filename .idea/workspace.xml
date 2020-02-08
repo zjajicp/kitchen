@@ -2,9 +2,30 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ac77bbb3-d80c-4f1e-8a64-a544134a5df3" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/config/env.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/config/jest/cssTransform.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/config/jest/fileTransform.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/config/modules.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/config/paths.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/config/pnpTs.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/config/webpack.config.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/config/webpackDevServer.config.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/scripts/build.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/scripts/start.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/scripts/test.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/react-statex/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/react-statex/lib/connector.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/react-statex/lib/extras.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/react-statex/lib/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/react-statex/lib/store-provider.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/selectors.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/KitchenMode.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/KitchenMode.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/KitchenWork.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/KitchenWork.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/kitchenStore.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/kitchenStore.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,6 +60,7 @@
     <property name="nodejs_interpreter_path" value="node" />
     <property name="nodejs_package_manager_path" value="yarn" />
     <property name="settings.editor.selected.configurable" value="configurable.group.appearance" />
+    <property name="ts.external.directory.path" value="$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -82,7 +104,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1581130968972</updated>
-      <workItem from="1581130971961" duration="10178000" />
+      <workItem from="1581130971961" duration="15527000" />
     </task>
     <servers />
   </component>
@@ -90,9 +112,25 @@
     <option name="version" value="1" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="385" y="112" width="670" height="676" key="search.everywhere.popup" timestamp="1581149105093">
+    <state width="1419" height="244" key="GridCell.Tab.0.bottom" timestamp="1581149744856">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="385" y="112" width="670" height="676" key="search.everywhere.popup/0.0.1440.900@0.0.1440.900" timestamp="1581149105093" />
+    <state width="1419" height="244" key="GridCell.Tab.0.bottom/0.0.1440.900@0.0.1440.900" timestamp="1581149744856" />
+    <state width="1419" height="244" key="GridCell.Tab.0.center" timestamp="1581149744855">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1419" height="244" key="GridCell.Tab.0.center/0.0.1440.900@0.0.1440.900" timestamp="1581149744855" />
+    <state width="1419" height="244" key="GridCell.Tab.0.left" timestamp="1581149744854">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1419" height="244" key="GridCell.Tab.0.left/0.0.1440.900@0.0.1440.900" timestamp="1581149744854" />
+    <state width="1419" height="244" key="GridCell.Tab.0.right" timestamp="1581149744856">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1419" height="244" key="GridCell.Tab.0.right/0.0.1440.900@0.0.1440.900" timestamp="1581149744856" />
+    <state x="385" y="112" width="670" height="676" key="search.everywhere.popup" timestamp="1581154158098">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="385" y="112" width="670" height="676" key="search.everywhere.popup/0.0.1440.900@0.0.1440.900" timestamp="1581154158098" />
   </component>
 </project>
